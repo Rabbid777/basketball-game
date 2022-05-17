@@ -1,0 +1,23 @@
+body{
+    overflow: hidden;
+}
+
+#ball {
+    width: 100px;
+    height: 100px;
+    background-color: darkorange;
+    position: absolute;
+    bottom: 300px;
+    left: 100px;
+    border-radius: 100px;
+}
+
+#basket {
+    width: 150px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: aquamarine;
+    position: absolute;
+    bottom: 500px;
+    left: 800px;
+}
