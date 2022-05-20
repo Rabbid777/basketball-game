@@ -8,69 +8,99 @@ function Coordinates(x,y) {
     this.y = y;
 }
 
-function Vertices(element){
-    let width = parseInt(window.getComputedStyle(element).width,10);
-    let height = parseInt(window.getComputedStyle(element).width,10);
-    let x0 = parseInt(window.getComputedStyle(element).left,10);
-    let y0 = parseInt(window.getComputedStyle(element).bottom,10);
-    this.leftBottom = new Coordinates(x0,y0);
-    this.leftTop = new Coordinates(x0,y0+height);
-    this.rightBottom = new Coordinates(x0+width,y0);
-    this.rightTop = new Coordinates(x0+width,y0+height);
-    this.bottomMid = x0 + Math.floor(width/2);
-    this.leftMid = y0 + Math.floor(height/2);
+function Box(element){
+    this.width = parseInt(window.getComputedStyle(element).width,10);
+    this.height = parseInt(window.getComputedStyle(element).width,10);
+    this.x0 = parseInt(window.getComputedStyle(element).left,10);
+    this.y0 = parseInt(window.getComputedStyle(element).bottom,10);
+    this.x1 = this.x0 + this.width;
+    this.y1 = this.y0 + this.height;
+    let midX = this.x0 + Math.floor(this.width/2);
+    let midY = this.y0 + Math.floor(this.height/2);
+    this.center = new Coordinates(midX, midY);
 
     this.updatePosition = function (x,y){
-        this.leftBottom.x = x;
-        this.leftBottom.y = y;
-        this.leftTop.x = x;
-        this.leftTop.y = y + height;
-        this.rightBottom.x = x + width;
-        this.rightBottom.y = y;
-        this.rightTop.x = x + width;
-        this.rightTop.y = y + height;
-        this.bottomMid = x + Math.floor(width/2);
-        this.leftMid = y + Math.floor(height/2);
+        this.x0 = x;
+        this.y0 = y;
+        this.x1 = x + this.width;
+        this.y1 = y + this.height;
+        this.center.x = x + Math.floor(this.width/2);
+        this.center.y = y + Math.floor(this.height/2);
     }
+
 }
 
-const ball = {
-    element: document.querySelector(`#ball`),
-    vertices:0,
-    v0:35,
-    v:0,
-    angle:0.50,
-    t:0,
-    dt: 0.05,
+function Ball () {
+    this.element= document.querySelector(`#ball`);
+    this.box = new Box(this.element);
+    this.direction = true;
+    let v0 = 30;
+    let vx = 0;
+    let vy =0;
+    let v= 0;
+    let angle = 0.5;
+    let t= 0;
+    let tmax =0;
+    let dt = 0.05;
 
-    init: function() {
-        this.vertices = new Vertices(this.element);
-    },
+    this.setPosition = function(x,y){
+        this.box.updatePosition(x,y);
+        shiftObject(this);
+    };
 
-    setPosition: function(x,y){
-        this.vertices.updatePosition(x,y);
-        this.shiftElement();
-    },
+    this.move = function(){
+        calcValues(this);
+        shiftObject(this);
+    };
 
-    shiftElement: function(){
-        this.element.style.left = this.vertices.leftBottom.x+`px`;
-        this.element.style.bottom = this.vertices.leftBottom.y+`px`;
-    },
+    this.changeDirection = function(){
+        this.direction = false;
+        alert(angle);
+        angle = getNewAngle(vx,vy,t,tmax);
+        v0 = v;
+        t=0;
+        calcValues(this);
+    }
 
-    move: function(){
-        this.calcBallValues();
-        this.shiftElement();
-    },
+    function calcValues(ball){
+        if(t===0) tmax= getTmax(v0,angle);
+        t += dt;
+        let x = ball.box.x0 + getX(v0, t, angle);
+        let y = ball.box.y0 + getY(v0, t, angle);
+        ball.box.updatePosition(x,y);
+        vx = getSpeedX(v0,angle);
+        vy = getSpeedY(v0,angle,t);
+        v = getSpeed(vx,vy);
+    };
 
-    calcBallValues: function (){
-        this.t += this.dt;
-        let x = this.vertices.leftBottom.x + getX(this.v0, this.t, this.angle);
-        let y = this.vertices.leftBottom.y + getY(this.v0, this.t, this.angle);
-        this.vertices.updatePosition(x,y);
-        this.v = getSpeed(this.v0, this.angle, this.t);
-        this.angle = getAngle(this.v0, this.v, this.t);
-    },
-
+    function getTmax(v,angle){
+        return v * Math.sin(angle)/g;
+    }
+    function getX(v, t, angle){
+        return v * t * Math.cos(angle);
+    };
+    
+    function getY(v, t, angle){
+        return v * t * Math.sin(angle) - (g * Math.pow(t,2))/2;
+    };
+    
+    function getSpeedX(v0,angle){
+        return v0 * Math.cos(angle);
+    };
+    
+    function getSpeedY(v0,angle,t){
+        return v0*Math.sin(angle) - g * t;
+    };
+    
+    function getSpeed(vx,vy){
+        return Math.pow((Math.pow(vx,2)+Math.pow(vy,2)),1/2);
+    };
+    
+    function getNewAngle(vx,vy,t,tmax){
+        // if(t<tmax) return Math.PI/2 - vy/vx;
+        // if (t>tmax) return Math.PI - Math.atan(vy/vx);
+        return Math.PI - Math.atan(vy/vx);
+    };
     
 }
 
@@ -84,155 +114,55 @@ const man = {
     }
 }
 
-const basket = {
-    element: document.querySelector(`#basket`),
-    vertices: 0,
+function Basket () {
+    this.element = document.querySelector(`#basket`),
+    this.box = new Box(this.element);
 
-    init: function(){
-        this.vertices = new Vertices(this.element);
-    },
+    this.isBasketEdge = function(ball){
+        return (ball.box.x1 >= this.box.x0) &&
+               ((ball.box.y0 <= this.box.y1) && 
+                (ball.box.y1 >=this.box.y0));
+    };
 
-    calculateRatio: function(ball){
-        if (wall.isWall(ball.vertices.rightBottom.x)) return `isWallHit`;
-        if ((ball.vertices.rightBottom.x > this.vertices.leftTop.x)&&
-            (ball.vertices.bottomMid > this.vertices.leftTop.x)&&
-            (!wall.isWall(ball.vertices.rightBottom.x))&&
-            (ball.vertices.rightBottom.y>this.vertices.leftMid)&&
-            (ball.vertices.rightBottom.y <= this.vertices.leftTop.y)){ 
-            return `isWin`;
-        }
-        let x =((ball.vertices.rightBottom.x > this.vertices.leftTop.x) &&
-        (ball.vertices.bottomMid <= this.vertices.leftTop.x) &&
-        (ball.vertices.rightBottom.y < this.vertices.leftMid) &&
-        (ball.vertices.rightTop.y > this.vertices.leftMid));
-        let y =((ball.vertices.rightBottom.x > this.vertices.leftTop.x) &&
-        (ball.vertices.bottomMid > this.vertices.leftTop.x)&&
-        (!wall.isWall(ball.vertices.rightBottom.x)) &&
-        (ball.vertices.rightBottom.y < this.vertices.leftMid)&&
-        (ball.vertices.rightTop.y > this.vertices.leftMid));
-        // if (((ball.vertices.rightBottom.x > this.vertices.leftTop.x) &&
-        //     (ball.vertices.bottomMid <= this.vertices.leftTop.x) &&
-        //     (ball.vertices.rightBottom.y < this.vertices.leftMid)) ||
-        //     ((ball.vertices.rightBottom.x > this.vertices.leftTop.x) &&
-        //     (ball.vertices.bottomMid > this.vertices.leftTop.x)&&
-        //     (!wall.isWall(ball.vertices.rightBottom.x)) &&
-        //     (ball.vertices.rightBottom.y < this.vertices.leftMid))){
-                
-        if (x || y){return `isBasketHit`
-        }
-        return ``;
-    }
+    this.isCaught = function(ball){
+        return ((ball.box.center.x > this.box.x0) && 
+                (ball.box.y1 <= wall.x)) && 
+               ((ball.box.center.y <= this.box.y1) && 
+                (ball.box.center.y) >= (this.box.y0));
+    };
+
 }
 
-const wall = {
-    x : 0,
-    coeffElasticity:0,
-    init: function(){
-        this.x = basket.vertices.rightBottom.x;
-    },
-    isWall: function(x){
+function Wall() {
+    this.x = basket.box.x1;
+    this.isWall = function(x){
         return this.x <= x;
     }
 }
 
-ball.init();
-basket.init();
-wall.init();
-console.log(basket);
+const ball = new Ball();
+const basket = new Basket();
+const wall = new Wall();
+
 setInterval(game,50);
 
 function game (){
-    let ratioStr = basket.calculateRatio(ball);
-    if (!ratioStr || ratioStr === `isWin` || ball.v < 0){
-        ball.move();
+    let isWin = false;
+    if(basket.isBasketEdge(ball) && ball.direction){
+        ball.changeDirection();
+        ball.setPosition(basket.box.x0 - ball.box.width,ball.box.y0);
     }
-    else if (ratioStr === `isWallHit`){
-        ball.setPosition(wall.x - 100,ball.vertices.leftBottom.y - 10);
-        changeBallVector();
+    else if (wall.isWall(ball.box.x1) && ball.direction){
+        ball.changeDirection();
+        ball.setPosition(wall.x - ball.box.width,ball.box.y0);
     }
-    else if (ratioStr === `isBasketHit`){
-        ball.setPosition(basket.vertices.leftBottom.x-100,
-                        ball.vertices.leftBottom-10);
-        changeBallVector();
-    }
-}
-
-function changeBallVector(){
-    if (ball.v>ball.v0){
-    ball.v0 = -ball.v0;
-    ball.v = -ball.v;
-    console.log(ball.angle, ball.v, ball.v0);
-    ball.angle = - ball.angle;
-    }
-    else{
-        let t = ball.v0;
-        ball.v0=-ball.v;
-        ball.v = -t;
-        ball.angle = Math.PI/4-ball.angle;
+    else ball.move();
+    if (basket.isCaught(ball)){
+        isWin = true;
     }
 }
 
-//!!!!!!!!!
-// basket.calcPosition();
-// ball.calcPosition();
-// let moveTimer = setInterval(()=>{
-//     if (basket.isСaught(ball) && !isWin){
-//         isWin = true;
-//         alert(`win`);
-//         if (ball.v0>0) ball.v0 = -ball.v0;
-//         ball.angle = ball.angle +1;
-//     }
-//     if (!isWin && ((ball.coordinates.x+ball.width >= basket.edge.x)&& 
-//         (ball.fulcrum.y < basket.edge.y)&&
-//         (ball.fulcrum.y + ball.height > basket.edge.y))&&
-//         (ball.v0 > 0)){
-//         ball.setPosition(basket.coordinates.x-ball.width,ball.coordinates.y);
-//         shiftElement();
-//         ball.v0 = -ball.v0;
-//         ball.angle = ball.angle - Math.PI/2;
-//     }
-//     else if (!isWin && ((ball.coordinates.x > basket.coordinates.x) &&
-//          (ball.coordinates.x < basket.coordinates.x + basket.width - ball.width)&&
-//          (ball.coordinates.x +ball.width > basket.coordinates.x+basket.width)&&
-//          (ball.v0> 0))){
-//         ball.setPosition(basket.coordinates.x + basket.width - ball.width, ball.coordinates.y-10);
-//         shiftElement();
-//         ball.v0 = -ball.v0/5;
-//         ball.angle = ball.angle -1;
-//     } else if (ball.coordinates.y - 50 <= 0){
-//         ball.setPosition(ball.coordinates.x, 0);
-//         shiftElement();
-//     }
-//     else{
-//         ball.move();
-//     };
-
-// },100);
-
-function calcObjCoordinates(obj){
-    obj.setPosition(parseInt(window.getComputedStyle(obj.element).left,10),
-                    parseInt(window.getComputedStyle(obj.element).bottom,10));
-}
-
-// function shiftElement(){
-//     ball.element.style.left = ball.coordinates.x+`px`;
-//     ball.element.style.bottom = ball.coordinates.y+`px`;
-// }
-
-function getX(v, t, angle){
-    return v * t * Math.cos(angle);
-}
-
-function getY(v, t, angle){
-    return v * t * Math.sin(angle) - (g * Math.pow(t,2))/2;
-}
-
-function getSpeed(v, angle, t){
-    let vx = v * Math.cos(angle);
-    let vy = v * Math.sin(angle) - g * t;
-    return Math.pow((Math.pow(vx,2)+Math.pow(vy,2)),1/2);
-}
-
-function getAngle(v0, v, t){
-    return Math.asin((Math.pow(v0,2)-Math.pow(v,2)+Math.pow(g,2)*Math.pow(t,2))/(2*v0*g*t));
-}
+function shiftObject(obj){
+    obj.element.style.left = obj.box.x0+`px`;
+    obj.element.style.bottom = obj.box.y0+`px`;
+};
