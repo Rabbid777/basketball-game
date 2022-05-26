@@ -8,8 +8,7 @@ function createInterface(){
     basketImg.setAttribute(`src`,`img/basket.png`);
     let man = createElem(`div`,`man`,`#room`);
     let manBody = createElem(`img`,`body`,`#man`);
-    manBody.setAttribute(`src`,`img/basket.png`)
-    let manHead = createElem(`img`, `head`,`#man`);
+    manBody.setAttribute(`src`,`img/man.png`)
     let manLeftArm = createElem(`div`,`left-arm`,`#man`);
     let manRightArm = createElem(`div`,`right-arm`,`#man`);
 }
