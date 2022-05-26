@@ -3,6 +3,44 @@ const dt = 0.05;
 const windowHeight = document.documentElement.clientHeight;
 const windowWidth = document.documentElement.clientWidth;
 let isWin = false;
+let isEnd = false;
+
+const room = new Room();
+const ball = new Ball(21.5,0.85);
+const basket = new Basket();
+
+
+let newGameButton = document.createElement(`button`);
+newGameButton.classList.add(`new-game-button`);
+newGameButton.textContent = `Начать игру!`;
+newGameButton.addEventListener(`click`,startGame);
+document.querySelector(`body`).appendChild(newGameButton);
+
+
+function startGame(){
+    this.classList.toggle(`hide`);
+    let gameTimer = setInterval(()=>{
+        if(room.isBarrier(ball,basket)){    
+            let correctCoordinates = room.getСorrectСoordinates(ball,basket);
+            ball.setPosition(correctCoordinates.x,correctCoordinates.y);
+            ball.changeDirection(basket);
+        }
+        ball.move();
+        if (ball.isStatic) {
+            clearInterval(gameTimer);
+            ball.setPosition(ball.box.center.x, ball.box.height/2 +1);
+            if (!isEnd) endGame();
+        }
+        if (basket.isCaught(ball) && !isWin){
+            isWin = true;
+            if (!isEnd) endGame();
+            ball.setPosition(basket.box.center.x,ball.box.center.y);
+            ball.changeDirection(basket);
+        }
+    },dt*1000);
+}
+
+
 
 function Coordinates(x,y) {
     this.x = x;
@@ -33,17 +71,20 @@ function Box(element){
 
 }
 
-
-function Ball () {
+function Ball (speed, throwAangle) {
     this.element= document.querySelector(`#ball`);
     this.box = new Box(this.element);
-    let v0 = 35;
-    let angle = 0.6;
-    let t= 1;
+    this.direction = {
+        isToRight:true,
+        isUp:true,
+    };
+    this.isStatic = false;
+    let v0 = speed;
+    let angle = throwAangle;
+    let t = 1;
     let vx = 0;
     let vy =0;
     let v= 0;
-    this.isUp = true;
 
     this.setPosition = function(x,y){
         this.box.updatePosition(x,y);
@@ -53,35 +94,21 @@ function Ball () {
     this.move = function(){
         calcValues(this);
         shiftObject(this);
+        if (isWin) isWin = false;
     };
 
     this.changeDirection = function(basket){
         angle = getNewAngle(vx,vy,this,basket);
-        v0 = v0 * 0.9;
+        v0 = v0 * 0.8;
         t=1;
-        calcValues(this);
-        shiftObject(this);
+        this.isStatic = (Math.floor(v0) === 0 && this.box.y0 <=1);
     }
-
-    this.isEnd = function(){
-        let isLeftAngle = (Math.floor(this.box.x0)<=1) && 
-                          (Math.floor(this.box.y0)<=1) &&
-                          (angle >= Math.PI/2) && 
-                          (angle <= 3*Math.PI/2);
-        let isRightAngle = (Math.floor(this.box.x1) <= (windowWidth - this.box.width)) && 
-                           (Math.floor(this.box.y0<=1)) &&
-                           (angle <= Math.PI/2) && 
-                           (angle >= 3*Math.PI/2);
-        return isLeftAngle || isRightAngle || Math.ceil(v0) === 0;
-    }
-    
 
     function calcValues(ball){
         t += dt;
         let x = ball.box.center.x + getX(v0, t, angle);
         let y = ball.box.center.y + getY(v0, t, angle);
-        if (y > ball.box.center.y) ball.isUp = true
-        else ball.isUp = false;
+        updateDirection(x,y,ball);
         vx = getSpeedX(v0,angle);
         vy = getSpeedY(v0,angle,t);
         v = getSpeed(vx,vy);
@@ -95,6 +122,11 @@ function Ball () {
     function getY(v, t, angle){
         return v * t * Math.sin(angle) - (g * Math.pow(t,2))/2;
     };
+
+    function updateDirection(x,y,ball){
+        ball.direction.isUp = y > ball.box.center.y;
+        ball.direction.isToRight = x > ball.box.center.x;
+    }
     
     function getSpeedX(v0,angle){
         return v0 * Math.cos(angle);
@@ -108,11 +140,14 @@ function Ball () {
         return Math.pow((Math.pow(vx,2)+Math.pow(vy,2)),1/2);
     };
 
+    //За это мне стыдно! Может однажды переосмыслю эти углы.
     function getNewAngle(vx,vy,ball,basket){
         vy = getCorrectVy(vy,ball);
         let b = Math.atan(vy/vx);
 
-        if (ball.box.y0 <=1){
+        if (isWin && isEnd){
+            return -Math.PI/2;
+        } else if (ball.box.y0 <=1){
             if (b < 3*Math.PI/2 && b >0) return Math.PI-b;
             else if (b < 0) return Math.abs(b);
             else return 2*Math.PI -b;
@@ -131,31 +166,25 @@ function Ball () {
     function getCorrectVy(vy,ball){
         if ((ball.isUp && vy<0) || (!ball.isUp && vy>0)) return -vy;
         return vy;
-        // let arr = [vx,vy];
-        // if ((ball.isUp && vx<0) || (!ball.isUp && vx>0)) return [-vx,vy];
-        // if ((ball.isUp && vy<0) || (!ball.isUp && vy>0)) return [vx,-vy];
-        // if (!ball.isUp && vx > 0 && (ball.box.x0 <=1)) return [-vx,vy];
-        // if (ball.isUp && vx < 0 && (ball.box.x1 >=windowWidth-1)) return [-vx,vy];
-        // if (!ball.isUp && vy >0 && (ball.box.y0 <=1)) return [vx,-vy];
-        // if (vy < 0 && (ball.box.y1 >= windowHeight-1)) return [vx,-vy];
     }
 }
 
 function Basket () {
-    this.element = document.querySelector(`#basket`),
+    this.element = document.querySelector(`#basket`);
     this.box = new Box(this.element);
 
     this.isBasketEdge = function(ball){
         return (ball.box.x1 >= this.box.x0) &&
-               ((ball.box.y0 <= this.box.y1) && 
-                (ball.box.y1 >=this.box.y0));
+               (ball.box.x0 <= this.box.x0) && 
+               (ball.box.y0 <= this.box.center.y) &&
+               (ball.box.y1 >= this.box.center.y);
     };
 
     this.isCaught = function(ball){
-        return ((ball.box.center.x > this.box.x0) && 
-                (ball.box.y1 <= this.box.x1)) && 
-               ((ball.box.center.y <= this.box.y1) && 
-                (ball.box.center.y) >= (this.box.y0));
+        return (ball.box.center.x > this.box.x0) && 
+               (ball.box.x1 <= this.box.x1)&&
+               (ball.box.center.y >= this.box.center.y) &&
+               (ball.box.y0 <= this.box.y1);
     };
 
 }
@@ -209,26 +238,14 @@ function Room (){
 
 }
 
-const room = new Room();
-const ball = new Ball();
-const basket = new Basket();
-
-let gameTimer = setInterval(game,dt*1000);
-
-function game (){
-    let isWin = false;
-    if(room.isBarrier(ball,basket)){    
-        let correctCoordinates = room.getСorrectСoordinates(ball,basket);
-        ball.setPosition(correctCoordinates.x,correctCoordinates.y);
-        ball.changeDirection(basket);
-    }
-    else {
-        ball.move();
-        if (ball.isEnd()) clearInterval(gameTimer);
-    }
-    if (basket.isCaught(ball)){
-        isWin = true;
-    }
+function endGame(){
+    isEnd = true;
+    document.querySelector(`.new-game-button`).classList.toggle(`hide`);
+    let resultElement = document.createElement(`div`);
+    resultElement.setAttribute(`id`, `result`);
+    if(isWin) resultElement.textContent = `ПОЗДРАВЛЯЮ`;
+    else resultElement.textContent = `Попробуй еще!!!`;
+    document.querySelector(`body`).appendChild(resultElement);
 }
 
 function shiftObject(obj){

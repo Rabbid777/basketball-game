@@ -1,5 +1,11 @@
 body{
+    width: 100vw;
+    height: 100vh;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 #room{
@@ -10,22 +16,66 @@ body{
     left: 0;
 }
 
+#man {
+    width: 100px;
+    height: 300px;
+    position: absolute;
+    bottom: 0;
+    left: 100px;
+    background-color: aqua;
+}
+
 #ball {
+    background-image: url(../img/ball.png);
+    background-size: cover;
     width: 100px;
     height: 100px;
-    background-color: darkorange;
     position: absolute;
     bottom: 300px;
     left: 100px;
     border-radius: 100px;
+    z-index: 2;
 }
 
 #basket {
     width: 150px;
-    height: 50px;
+    height: 60px;
     border-radius: 50%;
-    background-color: aquamarine;
+    background-color: #cad1e1;
     position: absolute;
-    bottom: 500px;
-    right: 0;
+    bottom: 700px;
+    right: 10px;
+    z-index: 3;
+}
+
+#basket-img{
+    position: absolute;
+    bottom: 540px;
+    right: -10px;
+    width: 200px;
+    z-index: 0;
+}
+
+#result {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50vw;
+    height: 50vh;
+    background-color: #cad1e1;
+    font-size: 3vw;
+}
+
+.new-game-button{
+    width: 50vw;
+    height: 15vh;
+    background-color: #cad1e1;
+    border: 0;
+    z-index: 999999;
+
+    font-size: 3vw;
+}
+
+.hide {
+    display: none;
 }
