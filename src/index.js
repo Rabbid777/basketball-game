@@ -1,24 +1,18 @@
 const g = 9.78;
 const dt = 0.05;
-const windowHeight = document.documentElement.clientHeight;
-const windowWidth = document.documentElement.clientWidth;
 let isWin = false;
 let isEnd = false;
 
-const room = new Room();
-const ball = new Ball(21.5,0.85);
-const basket = new Basket();
 
 
-let newGameButton = document.createElement(`button`);
-newGameButton.classList.add(`new-game-button`);
-newGameButton.textContent = `Начать игру!`;
-newGameButton.addEventListener(`click`,startGame);
-document.querySelector(`body`).appendChild(newGameButton);
+// document.querySelector(`#new-game-button`).addEventListener(`click`,startGame);
 
 
-function startGame(){
-    this.classList.toggle(`hide`);
+function startGame(startAngle,startSpeed){
+    const room = new Room();
+    const ball = new Ball(startSpeed,startAngle);
+    const basket = new Basket();
+    //this.classList.toggle(`hide`);
     let gameTimer = setInterval(()=>{
         if(room.isBarrier(ball,basket)){    
             let correctCoordinates = room.getСorrectСoordinates(ball,basket);
@@ -240,12 +234,10 @@ function Room (){
 
 function endGame(){
     isEnd = true;
-    document.querySelector(`.new-game-button`).classList.toggle(`hide`);
-    let resultElement = document.createElement(`div`);
-    resultElement.setAttribute(`id`, `result`);
-    if(isWin) resultElement.textContent = `ПОЗДРАВЛЯЮ`;
-    else resultElement.textContent = `Попробуй еще!!!`;
-    document.querySelector(`body`).appendChild(resultElement);
+    document.querySelector(`#new-game-button`).classList.toggle(`hide`);
+    let resultText = `Попробуй еще!!!`;
+    if(isWin) resultText = `ПОЗДРАВЛЯЮ`;
+    let resultElement = createElem(`div`,`result`,`body`,resultText);
 }
 
 function shiftObject(obj){

@@ -30,12 +30,20 @@ body{
     left: 0;
 }
 
+#drop-zone{
+    position: absolute;
+    bottom: 0;
+    width: 600px;
+    height: 600px;
+    background-color: cadetblue;
+}
+
 #ball {
     background-image: url(../img/ball.png);
     background-size: cover;
     width: 100px;
     height: 100px;
-    position: absolute;
+    position: fixed;
     bottom: 300px;
     left: 100px;
     border-radius: 100px;
@@ -71,7 +79,7 @@ body{
     font-size: 3vw;
 }
 
-.new-game-button{
+#new-game-button{
     width: 50vw;
     height: 15vh;
     background-color: #cad1e1;
