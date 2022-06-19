@@ -8,7 +8,8 @@ newGameButton.addEventListener(`click`, (e) => {
   let ball = document.querySelector(`#ball`);
   ball.style.left = startPosition[0] + `px`;
   ball.style.bottom = startPosition[1] + `px`;
-  document.querySelector(`.info`).textContent = `Возьми мяч и брось в корзину! Дождись результата!`;
+  //document.querySelector(`.info`).textContent = `Возьми мяч и брось в корзину! Дождись результата!`;
+  document.querySelector(`.info`).textContent = `Господи, как же хороша эта рука в первой четверти`;
   document.querySelector(`.info`).classList.toggle(`hide`);
   newGameButton.classList.toggle(`hide`);
   let man = new Man();

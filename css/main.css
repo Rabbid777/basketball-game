@@ -53,6 +53,7 @@ body {
 .result {
   display: flex;
   align-items: center;
+  text-align: center;
   justify-content: center;
   width: 50vw;
   height: 50vh;
