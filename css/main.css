@@ -18,37 +18,14 @@ body {
   left: 0;
 }
 
-#man {
-  width: 400px;
-  height: 432px;
-  position: absolute;
-  bottom: 0;
-  left: 75px;
-}
-
-#man img {
-  width: 400px;
-  position: absolute;
-  left: 0;
-}
-
-#drop-zone {
-  border-radius: 100%;
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 550px;
-  height: 550px;
-}
-
 #ball {
   background-image: url(../img/ball.png);
   background-size: cover;
   width: 100px;
   height: 100px;
   position: fixed;
-  bottom: 300px;
-  left: 100px;
+  bottom: 500px;
+  left: 200px;
   border-radius: 100px;
   z-index: 2;
 }
@@ -93,6 +70,60 @@ body {
   z-index: 3;
   font-size: 3vw;
 }
+
+#drop-zone {
+  border-radius: 100%;
+  position: absolute;
+  left: 0;
+  bottom: 50px;
+  width: 500px;
+  height: 500px;
+}
+
+#man {
+  width: 400px;
+  height: 432px;
+  position: absolute;
+  bottom: -50px;
+  left: 50px;
+  z-index: 1;
+}
+
+#man img {
+  width: 400px;
+  position: absolute;
+  left: 0;
+  z-index: 1;
+}
+#left-arm, #right-arm{
+  position: absolute;
+  left: 0;
+}
+
+.part1, .part2{
+  position: fixed;
+  width: 20px;
+  height: 125px;
+  background-color: blueviolet;
+  left: 240px;
+}
+.part1{
+  bottom: 300px;
+  transform: rotate(0deg);
+  left: 240px;
+}
+.part2{
+  bottom: 425px;
+  transform: rotate(0deg);
+}
+
+#left-arm .part1, #left-arm .part2{
+  z-index: 0;
+}
+#right-arm .part1, #right-arm .part2{
+  z-index: 3;
+}
+
 
 .hide {
   display: none;

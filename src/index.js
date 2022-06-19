@@ -31,34 +31,6 @@ function startGame(startAngle, startSpeed) {
   }, dt * 1000);
 }
 
-function Coordinates(x, y) {
-  this.x = x;
-  this.y = y;
-}
-
-function Box(element) {
-  this.width = parseInt(window.getComputedStyle(element).width, 10);
-  this.height = parseInt(window.getComputedStyle(element).height, 10);
-  this.x0 = parseInt(window.getComputedStyle(element).left, 10);
-  this.y0 = parseInt(window.getComputedStyle(element).bottom, 10);
-  this.x1 = this.x0 + this.width;
-  this.y1 = this.y0 + this.height;
-  let midX = this.x0 + Math.floor(this.width / 2);
-  let midY = this.y0 + Math.floor(this.height / 2);
-  this.center = new Coordinates(midX, midY);
-
-  this.updatePosition = function (x, y) {
-    let halfWidth = Math.floor(this.width / 2);
-    let halfHeight = Math.floor(this.height / 2);
-    this.center.x = x;
-    this.center.y = y;
-    this.x0 = x - halfWidth;
-    this.y0 = y - halfHeight;
-    this.x1 = x + halfWidth;
-    this.y1 = y + halfHeight;
-  };
-}
-
 function Ball(speed, throwAangle) {
   this.element = document.querySelector(`#ball`);
   this.box = new Box(this.element);
@@ -245,4 +217,28 @@ function startNewGame() {
 function shiftObject(obj) {
   obj.element.style.left = obj.box.x0 + `px`;
   obj.element.style.bottom = obj.box.y0 + `px`;
+}
+
+
+function Box(element) {
+  this.width = parseInt(window.getComputedStyle(element).width, 10);
+  this.height = parseInt(window.getComputedStyle(element).height, 10);
+  this.x0 = parseInt(window.getComputedStyle(element).left, 10);
+  this.y0 = parseInt(window.getComputedStyle(element).bottom, 10);
+  this.x1 = this.x0 + this.width;
+  this.y1 = this.y0 + this.height;
+  let midX = this.x0 + Math.floor(this.width / 2);
+  let midY = this.y0 + Math.floor(this.height / 2);
+  this.center = new Coordinates(midX, midY);
+
+  this.updatePosition = function (x, y) {
+    let halfWidth = Math.floor(this.width / 2);
+    let halfHeight = Math.floor(this.height / 2);
+    this.center.x = x;
+    this.center.y = y;
+    this.x0 = x - halfWidth;
+    this.y0 = y - halfHeight;
+    this.x1 = x + halfWidth;
+    this.y1 = y + halfHeight;
+  };
 }
