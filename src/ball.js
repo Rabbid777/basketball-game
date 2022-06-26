@@ -112,14 +112,14 @@ function Ball(speed, throwAangle) {
       else if (b < 0) return Math.abs(b);
       else return 2 * Math.PI - b;
     } else if (ball.box.y1 >= windowHeight - 1) {
-      if (b < Math.PI / 2 && b > 0) return Math.PI + b;
-      else return b - Math.PI;
+      if (b < 0) return 2*Math.PI - Math.abs(b);
+      else return Math.PI - Math.abs(b);
     } else if (ball.box.x0 <= 1) {
-      return Math.abs(b);
+      if(ball.direction.isUp) return Math.PI/2 - Math.abs(b); 
+      else return Math.abs(b);
     } else if (ball.box.x1 >= basket.box.x0 - 1) {
-      if (b < 0) return Math.PI - Math.abs(b);
-      else if (ball.isUp) return Math.PI + b;
-      else return b - Math.PI;
+      if(ball.direction.isUp) return Math.PI - Math.abs(b);
+      else return 2 * Math.PI - b;
     }
   }
 
