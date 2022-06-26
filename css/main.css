@@ -6,6 +6,9 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  font-size: Times, Times New Roman, serif;
+  font-weight: bold;
+  letter-spacing: -2px;
 }
 
 #room {
@@ -29,7 +32,7 @@ body {
   z-index: 2;
 }
 
-#floor-img{
+#floor-img {
   position: fixed;
   bottom: 0;
   width: 100vw;
@@ -57,26 +60,48 @@ body {
 
 #new-game-button,
 .info,
-.result{
+.result {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  padding: 0;
   width: 50vw;
   height: 50vh;
-  background-color: rgb(32, 32, 32);
-  border: 2px solid white;
-  font-size: 3vw;
+  background-color: #202020;
+  border: 2px solid #cad1e1;
   color: #f54d1e;
   font-style: oblique;
-  -webkit-text-stroke: 2px rgb(255, 255, 255);
+  -webkit-text-stroke: 2px #cad1e1;
+  white-space: pre-line;
   text-shadow: 10px 10px #0061b9, 
-  9px 9px #0061b9,
-  8px 8px #0061b9,
-  7px 7px #0061b9,
-  6px 6px #0061b9,
-  5px 5px #0061b9,
-  4px 4px #0061b9,
-  3px 3px #0061b9;
+                9px 9px #0061b9, 
+                8px 8px #0061b9,
+                7px 7px #0061b9, 
+                6px 6px #0061b9, 
+                5px 5px #0061b9, 
+                4px 4px #0061b9,
+                3px 3px #0061b9,
+                2px 2px #0061b9,
+                1px 1px #0061b9;
+  font-size: 3.5vw;
+  font-weight: 900;
+}
 
+#new-game-button:hover {
   font-size: 4vw;
-  font-weight: 700;
+}
+
+#counter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  z-index: 0;
+  font-size: 10vw;
+  color: #383838;
+  user-select: none;
 }
 
 .info,
@@ -117,12 +142,15 @@ body {
   left: 0;
   z-index: 1;
 }
-#left-arm, #right-arm{
+
+#left-arm,
+#right-arm {
   position: absolute;
   left: 0;
 }
 
-.part1, .part2{
+.part1,
+.part2 {
   position: fixed;
   width: 22px;
   height: 125px;
@@ -131,31 +159,33 @@ body {
   border-radius: 50px;
   z-index: 0;
 }
-.part1{
+
+.part1 {
   bottom: 300px;
   transform: rotate(0deg);
   left: 240px;
 }
-.part2{
+
+.part2 {
   bottom: 425px;
   transform: rotate(0deg);
 }
 
-#right-arm .part1{
+#right-arm .part1 {
   bottom: 290px;
   left: 225px;
 }
 
-#right-arm .part2{
+#right-arm .part2 {
   bottom: 415px;
   left: 225px;
 }
 
-#right-arm .part1, #right-arm .part2{
+#right-arm .part1,
+#right-arm .part2 {
   z-index: 4;
   background-color: #8d7246;
 }
-
 
 .hide {
   display: none;
