@@ -5,26 +5,18 @@ const windowWidth = document.documentElement.clientWidth;
 
 function createInterface() {
   let room = createElem(`div`, `room`, [], `body`);
+  let floorImg = createElem(`img`, `floor-img`,[], `#room`);
+  floorImg.setAttribute(`src`, `img/floor.png`);
   let dropZone = createElem(`div`, `drop-zone`, [], `#room`);
-  let ball = createElem(`div`, `ball`,[], `#drop-zone`);
+  createMan();
+  let ball = createElem(`div`, `ball`,[], `#man`);
   let basket = createElem(`div`, `basket`,[], `#room`);
   let basketImg = createElem(`img`, `basket-img`,[], `#room`);
   basketImg.setAttribute(`src`, `img/basket.png`);
-  createMan();
   let result = createElem(`div`, ``,[`hide`,`result`], `body`);
   let info = createElem(`div`, ``,[`hide`,`info`], `body`);
 
   let newGameButton = createElem(`button`,`new-game-button`, [],`body`,`Начать игру!`);
-
-  // newGameButton.addEventListener(`click`, (e) => {
-  //   result.classList.add(`hide`);
-  //   ball.style.left = startPosition[0] + `px`;
-  //   ball.style.bottom = startPosition[1] + `px`;
-  //   dragElement(ball, dropZone, man);
-  //   info.textContent = `Возьми мяч и брось в корзину! Дождись результата!`;
-  //   info.classList.toggle(`hide`);
-  //   newGameButton.classList.toggle(`hide`);
-  // });
 }
 
 function createMan(){
@@ -32,7 +24,7 @@ function createMan(){
   let manBody = createElem(`img`, `body`,[], `#man`);
   manBody.setAttribute(`src`, `img/man.png`);
   let manLeftArm = createArm(`left-arm`);
-  //let manRightArm = createArm(`right-arm`);
+  let manRightArm = createArm(`right-arm`);
 }
 
 function createArm(id){
@@ -41,7 +33,6 @@ function createArm(id){
   let part2 = createElem(`div`,``,[`part2`],`#${id}`);
 
 }
-
 
 function createElem(elem, id, classNames, parentSelector, text) {
   let item = document.createElement(elem);

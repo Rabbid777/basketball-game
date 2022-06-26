@@ -6,11 +6,10 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: rgb(32, 32, 32);
 }
 
 #room {
-  background-color: rgb(32, 32, 32);
+  background-color: #202020;
   width: 100%;
   height: 100%;
   position: absolute;
@@ -30,11 +29,18 @@ body {
   z-index: 2;
 }
 
+#floor-img{
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+}
+
 #basket {
-  width: 150px;
-  height: 60px;
+  width: 160px;
+  height: 40px;
   border-radius: 50%;
-  background-color: #cad1e1;
+  border: 1px solid #ff6a20;
+  background-color: #202020;
   position: absolute;
   bottom: 600px;
   right: 10px;
@@ -43,10 +49,34 @@ body {
 
 #basket-img {
   position: absolute;
-  bottom: 440px;
+  bottom: 457px;
   right: -10px;
   width: 200px;
   z-index: 0;
+}
+
+#new-game-button,
+.info,
+.result{
+  width: 50vw;
+  height: 50vh;
+  background-color: rgb(32, 32, 32);
+  border: 2px solid white;
+  font-size: 3vw;
+  color: #f54d1e;
+  font-style: oblique;
+  -webkit-text-stroke: 2px rgb(255, 255, 255);
+  text-shadow: 10px 10px #0061b9, 
+  9px 9px #0061b9,
+  8px 8px #0061b9,
+  7px 7px #0061b9,
+  6px 6px #0061b9,
+  5px 5px #0061b9,
+  4px 4px #0061b9,
+  3px 3px #0061b9;
+
+  font-size: 4vw;
+  font-weight: 700;
 }
 
 .info,
@@ -55,21 +85,12 @@ body {
   align-items: center;
   text-align: center;
   justify-content: center;
-  width: 50vw;
-  height: 50vh;
-  background-color: #cad1e1;
-  font-size: 3vw;
   z-index: 3;
 }
 
 #new-game-button {
   position: absolute;
-  width: 30vw;
-  height: 15vh;
-  background-color: #cad1e1;
-  border: 0;
   z-index: 3;
-  font-size: 3vw;
 }
 
 #drop-zone {
@@ -103,10 +124,12 @@ body {
 
 .part1, .part2{
   position: fixed;
-  width: 20px;
+  width: 22px;
   height: 125px;
-  background-color: blueviolet;
+  background-color: #583f27;
   left: 240px;
+  border-radius: 50px;
+  z-index: 0;
 }
 .part1{
   bottom: 300px;
@@ -118,11 +141,19 @@ body {
   transform: rotate(0deg);
 }
 
-#left-arm .part1, #left-arm .part2{
-  z-index: 0;
+#right-arm .part1{
+  bottom: 290px;
+  left: 225px;
 }
+
+#right-arm .part2{
+  bottom: 415px;
+  left: 225px;
+}
+
 #right-arm .part1, #right-arm .part2{
-  z-index: 3;
+  z-index: 4;
+  background-color: #8d7246;
 }
 
 

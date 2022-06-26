@@ -9,10 +9,11 @@ newGameButton.addEventListener(`click`, (e) => {
   ball.style.left = startPosition[0] + `px`;
   ball.style.bottom = startPosition[1] + `px`;
   //document.querySelector(`.info`).textContent = `Возьми мяч и брось в корзину! Дождись результата!`;
-  document.querySelector(`.info`).textContent = `Ого вот это рука`;
+  document.querySelector(`.info`).textContent = `Ого вот это руки`;
   document.querySelector(`.info`).classList.toggle(`hide`);
   newGameButton.classList.toggle(`hide`);
   let man = new Man();
+  man.upArms();
   dragElement(ball, document.querySelector(`#drop-zone`),man);
 });
 
@@ -60,10 +61,12 @@ function dragElement(elem, dropZone, man) {
     }
     elem.style.top = elem.offsetTop - y0 + `px`;
     elem.style.left = elem.offsetLeft - x0 + `px`;
-    man.arm.move(x1,windowHeight - y1);
+    man.arms.left.move(x1,windowHeight - y1);
+    man.arms.right.move(x1-man.arms.deltaX,windowHeight-y1-man.arms.deltaY);
   }
 
   function closeDragElement() {
+    man.downArms(x1,windowHeight-y1);
     document.onmouseup = null;
     document.onmousemove = null;
     elem.onmousedown = null;
@@ -141,11 +144,36 @@ function Man() {
   this.element = document.querySelector(`#man`);
   let height = parseInt(window.getComputedStyle(this.element).height, 10);
   let width = parseInt(window.getComputedStyle(this.element).width, 10);
-  // let arms = {
-  //   left: new Arm(`left`,ball),
-  //   right: new Arm(`right`,ball),
-  // };
-  this.arm = new Arm(`left`);
+  this.arms = {
+    left: new Arm(`left`),
+    right: new Arm(`right`),
+    deltaX: 15,
+    deltaY: 10,
+  };
+  this.downArms = function(xStart,yStart){
+    let x = xStart;
+    let y = yStart;
+    let man = this;
+    let armsEndAnimationTimer = setInterval(function(){
+      if (y > 50){
+        if (x > startPosition[0]) x -= 5;
+        else if ( x < startPosition[0]) x +=5;
+        y -= 10;
+        man.arms.left.move(x,y);
+        man.arms.right.move(x-man.arms.deltaX,y-man.arms.deltaY);
+      } else {
+        clearInterval(armsEndAnimationTimer);
+      }
+    },50);
+  },
+  this.upArms = function(){
+    this.arms.left.part1Position.update(new Coordinates(240,300),0);
+    this.arms.left.part2Position.update(new Coordinates(240,425),0);
+    this.arms.right.part1Position.update(new Coordinates(240 - this.arms.deltaX, 300 - this.arms.deltaY),0);
+    this.arms.right.part2Position.update(new Coordinates(240 - this.arms.deltaX,425 - this.arms.deltaY),0);
+    this.arms.left.reset();
+    this.arms.right.reset();
+  }
 }
 
 function Arm(side){
@@ -157,6 +185,11 @@ function Arm(side){
   let shoulder = new Coordinates(this.part1Position.x0, this.part1Position.y0);
   let length = this.part1Position.height + this.part2Position.height;
   let quarter = 0;
+
+  this.reset = function(){
+    shoulder = new Coordinates(this.part1Position.x0, this.part1Position.y0);
+    quarter = 0;
+  }
 
   this.move = function(x,y){
     quarter = calcQuarter(x,y,shoulder);
@@ -231,7 +264,6 @@ function Arm(side){
     } else if (quarter === 4) {
       dx = (l/2) * Math.sin(Math.PI - Math.abs(angle));
       x = x0 + dx;
-      //if (part === 1) dy = l - l * Math.pow(Math.cos(Math.abs(angle))/2,2);
       y = y0-dy;
     }
     return new Coordinates(x,y);
@@ -239,7 +271,7 @@ function Arm(side){
 
   function getPartElem(num){
     if (side === `left`) return document.querySelectorAll(`.part${num}`)[0];
-    else document.querySelectorAll(`.part${num}`)[1];
+    else return document.querySelectorAll(`.part${num}`)[1];
   };
 }
 
