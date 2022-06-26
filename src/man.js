@@ -9,7 +9,7 @@ newGameButton.addEventListener(`click`, (e) => {
   ball.style.left = startPosition[0] + `px`;
   ball.style.bottom = startPosition[1] + `px`;
   //document.querySelector(`.info`).textContent = `Возьми мяч и брось в корзину! Дождись результата!`;
-  document.querySelector(`.info`).textContent = `Господи, как же хороша эта рука в первой четверти`;
+  document.querySelector(`.info`).textContent = `Ого вот это рука`;
   document.querySelector(`.info`).classList.toggle(`hide`);
   newGameButton.classList.toggle(`hide`);
   let man = new Man();
@@ -165,7 +165,6 @@ function Arm(side){
     let distanceAngle = calcDistanceAngle(y,distance,shoulder);
     let partDistanceAngle = calcPartDistanceAngle(distance,this);
     let partsAnglesArr = calcPartsAnglesArr(distanceAngle,partDistanceAngle,quarter);
-    //console.log(partDistanceAngle*180 / Math.PI);
     let foldPoint = calcFoldPoint(partsAnglesArr[0],this,shoulder,quarter);
     let newCoordinatesPart1 = calcNewCoordinates(this.part1Position.height,
                                                  partsAnglesArr[0], quarter,
@@ -173,9 +172,6 @@ function Arm(side){
     let newCoordinatesPart2 = calcNewCoordinates(this.part2Position.height,
                                                  partsAnglesArr[1], quarter,
                                                  foldPoint.x,foldPoint.y,2);
-    //console.log(foldPoint, newCoordinatesPart2);
-    //console.log(partsAnglesArr[0]*180 / Math.PI,partsAnglesArr[1]*180 / Math.PI);
-    //console.log(`эээ`, newCoordinatesPart1, newCoordinatesPart2);
     this.part1Position.update(newCoordinatesPart1,partsAnglesArr[0]);
     this.part2Position.update(newCoordinatesPart2,partsAnglesArr[1]);
   }
@@ -200,80 +196,45 @@ function Arm(side){
   };
 
   function calcPartsAnglesArr(distanceAngle,partDistanceAngle,quarter){
-    //console.log(distanceAngle* 180 / Math.PI,partDistanceAngle* 180 / Math.PI,quarter);
     if (quarter === 1) return [Math.PI/2 - distanceAngle + partDistanceAngle,
                                Math.PI/2 - distanceAngle - partDistanceAngle];
-    if (quarter === 2) return [Math.PI/2 - distanceAngle - partDistanceAngle,
-                               Math.PI/2 - distanceAngle + partDistanceAngle];
-    if (quarter === 3) return [Math.PI/2 + distanceAngle,
-                               Math.PI/2 + distanceAngle + partDistanceAngle];
+    if (quarter === 2) return [-Math.PI/2 + distanceAngle + partDistanceAngle,
+                               -Math.PI/2 + distanceAngle - partDistanceAngle];
+    if (quarter === 3) return [-(Math.PI/2 + distanceAngle - partDistanceAngle),
+                               -(Math.PI/2 + distanceAngle + partDistanceAngle)];
     if (quarter === 4) return [Math.PI/2 + distanceAngle + partDistanceAngle,
                                Math.PI/2 + distanceAngle - partDistanceAngle];
   };
 
   function calcFoldPoint(part1Angle,arm, shoulder,quarter){
     let alpha = Math.PI/2 - part1Angle;
-    if (quarter === 2) alpha = - (Math.PI/2 - Math.abs(part1Angle));
-    else if (quarter === 3) alpha = Math.PI/2 + part1Angle;
+    if (quarter === 2 && part1Angle < 0) alpha = Math.PI/2 + Math.abs(part1Angle);
+    else if (quarter === 3) alpha = Math.PI/2 + Math.abs(part1Angle);
     else if (quarter === 4) alpha = Math.PI/2 - part1Angle;
     return new Coordinates(shoulder.x + arm.part1Position.height*Math.cos(alpha),
                            shoulder.y + arm.part1Position.height*Math.sin(alpha));
   };
 
   function calcNewCoordinates(l,angle,quarter,x0,y0,part){
-    let dx = 0;
-    let dy = 0;
+    let dx = (l/2) * Math.sin(angle);
+    let dy = l * Math.pow(Math.cos((Math.PI - Math.abs(angle))/2),2);
     let x = 0;
     let y = 0;
-    if(quarter === 1){
-      dx = (l/2) * Math.sin(angle);
+    if(quarter === 1 || quarter === 2){
       x = x0 + dx;
-      dy = l * Math.pow(Math.cos((Math.PI - Math.abs(angle))/2),2);
       y = y0 - dy;
-    } else if (quarter ===2){
-      dx = (l/2) * Math.sin(angle);
-      x = x0 - dx;
-      dy = l * Math.pow(Math.cos((Math.PI - Math.abs(angle))/2),2);
-      y = y0 -dy;
     } else if (quarter === 3){
-      dx = (l/2) * Math.sin(Math.PI - angle);
+      dx = (l/2) * Math.sin(Math.PI - Math.abs(angle));
       x = x0 - dx;
-      dy = l - l * Math.pow(Math.cos(angle)/2,2);
+      if (part === 1) dy = l - l * Math.pow(Math.cos(Math.abs(angle)/2),2);
       y = y0 - dy;
     } else if (quarter === 4) {
-      dx = (l/2)* Math.sin(Math.PI - angle);
+      dx = (l/2) * Math.sin(Math.PI - Math.abs(angle));
       x = x0 + dx;
-      // if (part === 2) dy = l * Math.pow(Math.cos(angle)/2,2);
-      // else 
-      dy = l - l * Math.pow(Math.cos(angle)/2,2);
+      //if (part === 1) dy = l - l * Math.pow(Math.cos(Math.abs(angle))/2,2);
       y = y0-dy;
-      console.log(angle, y0,dy,y);
     }
-    //console.log(angle*180/Math.PI,dy,dx);
     return new Coordinates(x,y);
-    // if(angle<=0 && Math.abs(angle) <= Math.PI/2){
-    //   dx = (l/2) * Math.sin(angle);
-    //   x = x0 - dx;
-    //   dy = dx * Math.tan(angle);
-    //   y = y0 -dy;
-    //   console.log(x,y,x0,y0,dx,angle * 180 / Math.PI);
-    // } else if (angle <= 0 && Math.abs(angle) >= Math.PI/2){
-    //   dx = (l/2) * Math.sin(Math.PI - angle);
-    //   x = x0 - dx;
-    //   dy = l - dx * Math.tan(Math.PI-angle);
-    //   y = y0 - dy;
-    // } else if (angle >= 0 && angle <= Math.PI/2){
-    //   dx = (l/2) * Math.sin(angle);
-    //   x = x0 + dx;
-    //   dy = dx * Math.tan(angle);
-    //   y = y0 - dy;
-    //   console.log(`1`,x,y,x0,y0,dx,angle * 180 / Math.PI);
-    // } else if (angle >= 0 && angle >= Math.PI/2){
-    //   dx = (l/2)* Math.sin(Math.PI - angle);
-    //   x = x0 + dx;
-    //   dy = l - dx * Math.tan(Math.PI-angle);
-    //   y = y0-dy;
-    // }
   };
 
   function getPartElem(num){
