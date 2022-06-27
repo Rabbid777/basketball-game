@@ -16,6 +16,7 @@ function createInterface() {
   let result = createElem(`div`, ``, [`hide`, `result`], `body`);
   let info = createElem(`div`, ``, [`hide`, `info`], `body`);
   let counter = createElem(`div`, `counter`, [], `#room`,`0`);
+  let endButton = createElem(`button`, `end-game-button`, [`hide`,], `body`, `Завершить попытку`);
 
   let newGameButton = createElem(`button`, `new-game-button`, [], `body`, `Начать игру!`);
 };

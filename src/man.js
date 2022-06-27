@@ -6,6 +6,9 @@ let newGameButton = document.querySelector(`#new-game-button`);
 
 newGameButton.addEventListener(`click`, (e) => {
   document.querySelector(`.result`).classList.add(`hide`);
+  document.querySelector(`#end-game-button`).addEventListener(`click`,()=>{
+    isRestart = true;
+  });
   let ball = document.querySelector(`#ball`);
   ball.style.left = startPosition[0] + `px`;
   ball.style.bottom = startPosition[1] + `px`;

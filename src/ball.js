@@ -2,26 +2,27 @@ const g = 9.78;
 const dt = 0.05;
 let isWin = false;
 let isEnd = false;
+let isRestart = false;
 
 function startGame(startAngle, startSpeed) {
   const room = new Room();
   const ball = new Ball(startSpeed, startAngle);
   const basket = new Basket();
+  document.querySelector(`#end-game-button`).classList.toggle(`hide`);
+  isRestart = false;
   let gameTimer = setInterval(() => {
     if (room.isBarrier(ball, basket)) {
       let correctCoordinates = room.getСorrectСoordinates(ball, basket);
       ball.setPosition(correctCoordinates.x, correctCoordinates.y);
       ball.changeDirection(basket);
-    }
+    };
     ball.move();
-    if (ball.isStatic) {
+    if (ball.isStatic || isRestart) {
       clearInterval(gameTimer);
       ball.setPosition(ball.box.center.x, ball.box.height / 2 + 1);
-      if (!isEnd) {
-        endGame();
-      }
+      if (!isEnd) endGame();
       startNewGame();
-    }
+    };
     if (basket.isCaught(ball) && !isWin) {
       isWin = true;
       if (!isEnd) endGame();
@@ -84,8 +85,8 @@ function Ball(speed, throwAangle) {
   };
 
   function updateDirection(x, y, ball) {
-    ball.direction.isUp = y > ball.box.center.y;
-    ball.direction.isToRight = x > ball.box.center.x;
+    if(y !== ball.box.center.y) ball.direction.isUp = y > ball.box.center.y;
+    if(x !== ball.box.center.x) ball.direction.isToRight = x > ball.box.center.x;
   };
 
   function getSpeedX(v0, angle) {
@@ -104,7 +105,7 @@ function Ball(speed, throwAangle) {
   function getNewAngle(vx, vy, ball, basket) {
     vy = getCorrectVy(vy, ball);
     let b = Math.atan(vy / vx);
-
+    console.log(ball.direction.isUp);
     if (isWin && isEnd) {
       return -Math.PI / 2;
     } else if (ball.box.y0 <= 1) {
@@ -118,6 +119,7 @@ function Ball(speed, throwAangle) {
       if (!ball.direction.isUp) return Math.PI / 2 - Math.abs(b);
       else return Math.abs(b);
     } else if (ball.box.x1 >= basket.box.x0 - 1) {
+      console.log(ball.direction.isUp,b*180/Math.PI);
       if (ball.direction.isUp) return Math.PI - Math.abs(b);
       else return 2 * Math.PI - b;
     };
@@ -200,11 +202,12 @@ function Room() {
 };
 
 function endGame() {
+  document.querySelector(`#end-game-button`).classList.toggle(`hide`);
   isEnd = true;
   let resultElem = document.querySelector(`.result`);
   let resultText = `Попробуй еще!!!`;
   if (isWin) {
-    resultText = `ПОЗДРАВЛЯЮ`;  
+    resultText = `ПОЗДРАВЛЯЮ!!!`;  
     counter++;
     document.querySelector(`#counter`).textContent =`${counter}`;
   }

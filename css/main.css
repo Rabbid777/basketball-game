@@ -88,6 +88,21 @@ body {
 
 #new-game-button:hover {
   font-size: 4vw;
+  border-color: #0061b9;
+}
+
+#new-game-button {
+  position: absolute;
+  z-index: 3;
+}
+
+.info,
+.result {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  z-index: 3;
 }
 
 #counter {
@@ -103,18 +118,23 @@ body {
   user-select: none;
 }
 
-.info,
-.result {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  justify-content: center;
-  z-index: 3;
+#end-game-button{
+  position: fixed;
+  width: 150px;
+  height: 150px;
+  background-color: #202020;
+  border: 2px solid #cad1e1;
+  top: 50px;
+  z-index: 0;
+  color: #cad1e1;
+  font-size: 1vw;
+  font-style: oblique;
 }
 
-#new-game-button {
-  position: absolute;
-  z-index: 3;
+#end-game-button:hover{
+  font-size: 1.2vw;
+  color: #0061b9;
+  border-color: #f54d1e;
 }
 
 #drop-zone {
